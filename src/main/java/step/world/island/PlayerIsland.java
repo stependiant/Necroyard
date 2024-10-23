@@ -22,8 +22,13 @@ public class PlayerIsland {
         lastActiveTime = System.currentTimeMillis();
     }
 
+    private boolean PlayerOnIsland() {
+        // TODO: switch if player join and leave from island
+        return true;
+    }
+
     public boolean isInactive() {
-        return System.currentTimeMillis() - lastActiveTime > 30*60;
+        return System.currentTimeMillis() - lastActiveTime > 30*60*1000;
         // TODO: add more good system analytic that player is inactive
     }
 

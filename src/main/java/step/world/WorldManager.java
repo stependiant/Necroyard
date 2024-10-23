@@ -14,18 +14,16 @@ public class WorldManager {
     private static WorldManager instance;
 
     private InstanceContainer mainLobby;
-    private Map<UUID, PlayerIsland> playerIslands;
-    private Map<UUID, DungeonInstance> activeDungeons;
+    private final Map<UUID, PlayerIsland> playerIslands;
+    private final Map<UUID, DungeonInstance> activeDungeons;
 
     private WorldManager() {
+        instance = new WorldManager();
         playerIslands = new ConcurrentHashMap<>();
         activeDungeons = new ConcurrentHashMap<>();
     }
 
     public static WorldManager getInstance() {
-        if (instance == null) {
-            instance = new WorldManager();
-        }
         return instance;
     }
 

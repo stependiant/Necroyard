@@ -6,15 +6,16 @@ import net.minestom.server.instance.anvil.AnvilLoader;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class PlayerIslandGenerator {
 
     public static InstanceContainer loadIsland(UUID playerId) {
-        Path islandFIle = Path.of("src\\main\\resources\\islands\\" + playerId + ".island");
+        Path islandFile = Paths.get("src", "main", "resources", "islands", playerId + ".island");
 
-        if (Files.exists(islandFIle)) {
-            return loadOldIsland(islandFIle);
+        if (Files.exists(islandFile)) {
+            return loadOldIsland(islandFile);
         } else {
             return createNewIsland();
         }
