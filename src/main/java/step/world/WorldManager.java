@@ -23,7 +23,7 @@ public class WorldManager {
     private final Map<UUID, PlayerIsland> playerIslands;
     private final Map<UUID, DungeonInstance> activeDungeons;
 
-    private WorldManager() {
+    public WorldManager() {
         playerIslands = new ConcurrentHashMap<>();
         activeDungeons = new ConcurrentHashMap<>();
         loadMainLobby();
@@ -39,7 +39,7 @@ public class WorldManager {
     }
 
     private void loadMainLobby() {
-        Path path = Paths.get("src", "main", "resources", "mainLobby");
+        Path path = Paths.get("src","main", "resources", "presets", "mainLobby");
         AnvilLoader anvilLoader = new AnvilLoader(path);
         mainLobby = MinecraftServer.getInstanceManager().createInstanceContainer(anvilLoader);
         LOGGER.debug("Loading main lobby");
