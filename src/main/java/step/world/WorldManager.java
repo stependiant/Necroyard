@@ -26,7 +26,6 @@ public class WorldManager {
     public WorldManager() {
         playerIslands = new ConcurrentHashMap<>();
         activeDungeons = new ConcurrentHashMap<>();
-        loadMainLobby();
     }
 
     public static WorldManager getInstance() {
@@ -38,15 +37,14 @@ public class WorldManager {
         return instance;
     }
 
-    private void loadMainLobby() {
-        Path path = Paths.get("src","main", "resources", "presets", "mainLobby");
-        AnvilLoader anvilLoader = new AnvilLoader(path);
-        mainLobby = MinecraftServer.getInstanceManager().createInstanceContainer(anvilLoader);
-        LOGGER.debug("Loading main lobby");
-    }
-
     public InstanceContainer getMainLobby() {
-        return mainLobby;
+        if (mainLobby == null) {
+            Path path = Paths.get("src","main", "resources", "presets", "mainLobby");
+            AnvilLoader anvilLoader = new AnvilLoader(path);
+            LOGGER.debug("Loading main lobby");
+            return MinecraftServer.getInstanceManager().createInstanceContainer(anvilLoader);
+        } else
+            return mainLobby;
     }
 
     public PlayerIsland getPlayerIsland(UUID playerId) {
