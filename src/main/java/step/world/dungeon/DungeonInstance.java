@@ -31,4 +31,9 @@ public class DungeonInstance {
     public void unloadDungeon() {
         // TODO: settings for unload chunks after complete his (CompletableFuture)
     }
+
+    @Override
+    public String toString() {
+        return "DungeonInstance{Type=" + dungeonType + ", id=" + dungeonId;
+    }
 }
