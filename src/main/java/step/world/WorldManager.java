@@ -12,6 +12,7 @@ import step.world.instance.DungeonInstance;
 import step.world.instance.LobbyInstance;
 import step.world.instance.PlayerInstance;
 import step.world.utils.Tags;
+import step.world.utils.WorldPath;
 import step.world.utils.WorldType;
 
 import java.nio.file.Path;
@@ -49,7 +50,7 @@ public class WorldManager {
 
     public LobbyInstance getMainLobby() {
         if (mainLobby == null) {
-            Path path = Paths.get("src","main", "resources", "presets", "mainLobby");
+            Path path = WorldPath.MAIN_LOBBY.getPath();
             AnvilLoader anvilLoader = new AnvilLoader(path);
             LOGGER.debug("Loading main lobby from {}", path.toAbsolutePath());
             InstanceContainer instanceContainer = MinecraftServer.getInstanceManager().createInstanceContainer(anvilLoader);

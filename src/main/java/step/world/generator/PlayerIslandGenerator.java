@@ -5,6 +5,7 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import step.world.utils.WorldPath;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -15,7 +16,7 @@ public class PlayerIslandGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerIslandGenerator.class);
 
     public static InstanceContainer loadIsland(UUID playerId) {
-        Path islandFile = Paths.get("src", "main", "resources", "islands", playerId + ".island");
+        Path islandFile = WorldPath.ISLANDS.getPath(playerId + ".island");
 
         if (Files.exists(islandFile)) {
             return loadOldIsland(islandFile);
@@ -25,8 +26,8 @@ public class PlayerIslandGenerator {
     }
 
     private static InstanceContainer createNewIsland(UUID playerId) {
-        Path presetIslandPath = Paths.get("src", "main", "resources", "presets", "island");
-        Path newIslandPath = Paths.get("src", "main", "resources", "islands", playerId + ".island");
+        Path presetIslandPath = WorldPath.ISLAND_PRESET.getPath();
+        Path newIslandPath = WorldPath.ISLANDS.getPath(playerId + ".island");
 
         if (Files.exists(presetIslandPath)) {
             try {
