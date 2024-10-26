@@ -5,9 +5,14 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import step.world.dungeon.DungeonInstance;
-import step.world.dungeon.DungeonType;
-import step.world.island.PlayerIsland;
+import step.world.utils.DungeonType;
+import step.world.generator.DungeonGenerator;
+import step.world.generator.PlayerIslandGenerator;
+import step.world.instance.DungeonInstance;
+import step.world.instance.LobbyInstance;
+import step.world.instance.PlayerInstance;
+import step.world.utils.Tags;
+import step.world.utils.WorldType;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,12 +20,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Менеджер миров, управляющий различными игровыми инстансами.
+ */
 public class WorldManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(WorldManager.class);
     private static volatile WorldManager instance;
 
-    private InstanceContainer mainLobby;
-    private final Map<UUID, PlayerIsland> playerIslands;
+    private LobbyInstance mainLobby;
+    private final Map<UUID, PlayerInstance> playerIslands;
     private final Map<UUID, DungeonInstance> activeDungeons;
 
     public WorldManager() {
@@ -31,40 +39,51 @@ public class WorldManager {
     public static WorldManager getInstance() {
         if (instance == null) {
             synchronized (WorldManager.class) {
-                instance = new WorldManager();
+                if (instance == null) {
+                    instance = new WorldManager();
+                }
             }
         }
         return instance;
     }
 
-    public InstanceContainer getMainLobby() {
+    public LobbyInstance getMainLobby() {
         if (mainLobby == null) {
             Path path = Paths.get("src","main", "resources", "presets", "mainLobby");
             AnvilLoader anvilLoader = new AnvilLoader(path);
-            LOGGER.debug("Loading main lobby");
-            return MinecraftServer.getInstanceManager().createInstanceContainer(anvilLoader);
-        } else
-            return mainLobby;
+            LOGGER.debug("Loading main lobby from {}", path.toAbsolutePath());
+            InstanceContainer instanceContainer = MinecraftServer.getInstanceManager().createInstanceContainer(anvilLoader);
+            instanceContainer.setTag(Tags.WORLD_TYPE_TAG, WorldType.LOBBY);
+            mainLobby = new LobbyInstance(instanceContainer);
+            // TODO: Настройка обработчиков событий для mainLobby
+        }
+        return mainLobby;
     }
 
-    public PlayerIsland getPlayerIsland(UUID playerId) {
-        PlayerIsland island = playerIslands.computeIfAbsent(playerId, PlayerIsland::new);
-        LOGGER.debug("Loaded island for player: {}", playerId);
-        return island;
+    public PlayerInstance getPlayerIsland(UUID playerId) {
+        return playerIslands.computeIfAbsent(playerId, id -> {
+            InstanceContainer instanceContainer = PlayerIslandGenerator.loadIsland(id);
+            instanceContainer.setTag(Tags.WORLD_TYPE_TAG, WorldType.ISLAND);
+            PlayerInstance islandInstance = new PlayerInstance(instanceContainer, id);
+            LOGGER.debug("Loaded island for player: {}", id);
+            return islandInstance;
+        });
     }
 
     public DungeonInstance createDungeonInstance(DungeonType type) {
-        DungeonInstance dungeon = new DungeonInstance(type);
-        activeDungeons.put(dungeon.getDungeonId(), dungeon);
-        LOGGER.debug("Created new dungeon: {}", dungeon);
-        return dungeon;
+        InstanceContainer instanceContainer = DungeonGenerator.generateDungeon(type);
+        instanceContainer.setTag(Tags.WORLD_TYPE_TAG, WorldType.DUNGEON);
+        DungeonInstance dungeonInstance = new DungeonInstance(instanceContainer, type);
+        activeDungeons.put(dungeonInstance.getDungeonId(), dungeonInstance);
+        LOGGER.debug("Created new dungeon: {}", dungeonInstance);
+        return dungeonInstance;
     }
 
     public void removeDungeonInstance(UUID dungeonId) {
-        DungeonInstance dungeon = activeDungeons.remove(dungeonId);
-        if (dungeon != null) {
-            dungeon.unloadDungeon();
-            LOGGER.debug("Removed dungeon: {}", dungeon);
+        DungeonInstance dungeonInstance = activeDungeons.remove(dungeonId);
+        if (dungeonInstance != null) {
+            dungeonInstance.unloadDungeon();
+            LOGGER.debug("Removed dungeon: {}", dungeonInstance);
         }
     }
 }

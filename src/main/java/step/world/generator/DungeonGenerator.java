@@ -2,7 +2,7 @@ package step.world.generator;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.instance.InstanceContainer;
-import step.world.dungeon.DungeonType;
+import step.world.utils.DungeonType;
 
 public class DungeonGenerator {
 
