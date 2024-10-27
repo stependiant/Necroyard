@@ -16,7 +16,6 @@ import step.world.utils.WorldPath;
 import step.world.utils.WorldType;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +47,7 @@ public class WorldManager {
         return instance;
     }
 
-    public LobbyInstance getMainLobby() {
+    public LobbyInstance getLobbyInstance() {
         if (mainLobby == null) {
             Path path = WorldPath.MAIN_LOBBY.getPath();
             AnvilLoader anvilLoader = new AnvilLoader(path);
@@ -61,7 +60,7 @@ public class WorldManager {
         return mainLobby;
     }
 
-    public PlayerInstance getPlayerIsland(UUID playerId) {
+    public PlayerInstance getPlayerInstance(UUID playerId) {
         return playerIslands.computeIfAbsent(playerId, id -> {
             InstanceContainer instanceContainer = PlayerIslandGenerator.loadIsland(id);
             instanceContainer.setTag(Tags.WORLD_TYPE_TAG, WorldType.ISLAND);
@@ -71,7 +70,7 @@ public class WorldManager {
         });
     }
 
-    public DungeonInstance createDungeonInstance(DungeonType type) {
+    public DungeonInstance getDungeonInstance(DungeonType type) {
         InstanceContainer instanceContainer = DungeonGenerator.generateDungeon(type);
         instanceContainer.setTag(Tags.WORLD_TYPE_TAG, WorldType.DUNGEON);
         DungeonInstance dungeonInstance = new DungeonInstance(instanceContainer, type);
