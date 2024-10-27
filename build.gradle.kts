@@ -11,6 +11,8 @@ repositories {
 }
 
 dependencies {
+    implementation("org.hibernate:hibernate-core:5.6.15.Final")
+    implementation("org.postgresql:postgresql:42.7.2")
     implementation("org.slf4j:slf4j-api:2.0.16")
     implementation("net.minestom:minestom-snapshots:bcb0301fb1")
     runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
